@@ -17,7 +17,7 @@ function index() {
 
 	$skippedDirs = explode(';', OCP\Config::getUserValue(OCP\User::getUser(), 'search_lucene', 'skipped_dirs', '.git;.svn;.CVS;.bzr'));
 
-	$query = OC_DB::prepare('INSERT INTO `*PREFIX*lucene_status` VALUES (?,?)');
+	$query = OCP\DB::prepare('INSERT INTO `*PREFIX*lucene_status` VALUES (?,?)');
 
 	foreach ($fileIds as $id) {
 		$skipped = false;
@@ -31,7 +31,7 @@ function index() {
 
 			//clean jobs for indexed file
 			$param=json_encode(array('path'=>$path,'user'=>OCP\User::getUser()));
-			$cleanjobquery = OC_DB::prepare('DELETE FROM `*PREFIX*queuedtasks` WHERE `app`=? AND `parameters`=?');
+			$cleanjobquery = OCP\DB::prepare('DELETE FROM `*PREFIX*queuedtasks` WHERE `app`=? AND `parameters`=?');
 			$cleanjobquery->execute(array('search_lucene',$param));
 
 			foreach ($skippedDirs as $skippedDir) {
@@ -50,7 +50,7 @@ function index() {
 			}
 
 			if (!$result) {
-				OC_JSON::error(array('message' => 'Could not index file.'));
+				OCP\JSON::error(array('message' => 'Could not index file.'));
 				$eventSource->send('error', $path);
 			}
 		} catch (PDOException $e) { //sqlite might report database locked errors when stock filescan is in progress
@@ -58,7 +58,7 @@ function index() {
 			\OCP\Util::writeLog('search_lucene',
 				$e->getMessage() . ' Trace:\n' . $e->getTraceAsString(),
 				\OCP\Util::ERROR);
-			OC_JSON::error(array('message' => 'Could not index file.'));
+			OCP\JSON::error(array('message' => 'Could not index file.'));
 			$eventSource->send('error', $e->getMessage());
 			//try to mark the file as new to let it reindex
 			$query->execute(array($id, 'N')); // Add UI to trigger rescan of files with status 'E'rror?

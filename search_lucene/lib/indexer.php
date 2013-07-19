@@ -246,7 +246,7 @@ class Indexer {
 			$mounts[] = $mount;
 		}
 
-		$query = \OC_DB::prepare('SELECT `*PREFIX*filecache`.`fileid`'
+		$query = \OCP\DB::prepare('SELECT `*PREFIX*filecache`.`fileid`'
 			. ' FROM `*PREFIX*filecache`'
 			. ' LEFT JOIN `*PREFIX*lucene_status`'
 			. ' ON `*PREFIX*filecache`.`fileid` = `*PREFIX*lucene_status`.`fileid`'
